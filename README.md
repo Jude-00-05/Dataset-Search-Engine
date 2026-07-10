@@ -214,26 +214,4 @@ For active development, treat these as reference or historical implementation pa
 - `sources/`
 - `data/`
 
-## Recommended GitHub Usage
 
-This repository is best presented on GitHub with:
-
-- this README as the entry point
-- [CONTRIBUTING.md](/c:/Projects/Web%20Search%20Engine/CONTRIBUTING.md) for contributor guidance
-- [docs/ARCHITECTURE.md](/c:/Projects/Web%20Search%20Engine/docs/ARCHITECTURE.md) for engineering context
-- [docs/OPERATIONS.md](/c:/Projects/Web%20Search%20Engine/docs/OPERATIONS.md) for maintenance and runbook notes
-
-## Known Gaps
-
-- no formal CI workflow is defined in this repository yet
-- backend automated tests are not present
-- frontend still includes CRA default test scaffolding
-- Kaggle live search is currently query-mapped rather than fully API-driven
-- legacy directories should eventually be archived, documented further, or removed
-
-## Next Documentation Improvements
-
-- add a `LICENSE` file once the intended license is confirmed
-- add issue and pull request templates
-- add screenshots or a short demo GIF for the UI
-- document deployment expectations if the app will be hosted
