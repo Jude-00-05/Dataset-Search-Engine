@@ -16,8 +16,10 @@ venv/
 env/
 
 # Node dependencies
+node_modules/
 backend/node_modules/
 frontend/node_modules/
+search_engine/node_modules/
 
 # Build output
 frontend/build/
@@ -28,6 +30,7 @@ data/fetch_report.json
 data/index_report.json
 data/link_check_report.json
 data/validation_report.json
+data/.index_cache/
 data/tmp/
 
 # OS and editor files
@@ -35,3 +38,8 @@ data/tmp/
 Thumbs.db
 .idea/
 .vscode/
+.claude
+CLAUDE.md
+
+.vercel
+.env*

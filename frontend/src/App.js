@@ -8,8 +8,43 @@ const FEATURED_QUERIES = [
   "indian traffic dataset",
 ];
 
+const FILTER_LABELS = {
+  en: "English",
+  ja: "Japanese",
+  ko: "Korean",
+  zh: "Chinese",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  hi: "Hindi",
+  unknown: "Unknown",
+  open: "Open",
+  commercial_friendly: "Commercial Friendly",
+  research: "Research Only",
+  restrictive: "Restrictive",
+  tabular: "Tabular",
+  text: "Text",
+  image: "Image",
+  audio: "Audio",
+  video: "Video",
+  geospatial: "Geospatial",
+  time_series: "Time Series",
+  code: "Code",
+  tiny: "Tiny",
+  small: "Small",
+  medium: "Medium",
+  large: "Large",
+  last_year: "Updated This Year",
+  last_3_years: "Updated In 3 Years",
+  older: "Older",
+};
+
 function formatLabel(value) {
-  return value
+  if (FILTER_LABELS[value]) {
+    return FILTER_LABELS[value];
+  }
+
+  return String(value)
     .split(/[-_ ]+/)
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -29,6 +64,21 @@ function buildParams(query, filters, page = 1, limit = 12) {
   }
   if (filters.tasks.length) {
     params.set("tasks", filters.tasks.join(","));
+  }
+  if (filters.languages.length) {
+    params.set("languages", filters.languages.join(","));
+  }
+  if (filters.licenses.length) {
+    params.set("licenses", filters.licenses.join(","));
+  }
+  if (filters.modalities.length) {
+    params.set("modalities", filters.modalities.join(","));
+  }
+  if (filters.sizes.length) {
+    params.set("sizes", filters.sizes.join(","));
+  }
+  if (filters.updated.length) {
+    params.set("updated", filters.updated.join(","));
   }
   params.set("page", String(page));
   params.set("limit", String(limit));
@@ -103,6 +153,11 @@ function ResultCard({ dataset }) {
       </div>
 
       <div className="token-row">
+        {(dataset.modalities || []).slice(0, 3).map((modality) => (
+          <span key={modality} className="token modality-token">
+            {formatLabel(modality)}
+          </span>
+        ))}
         {dataset.task_types.map((task) => (
           <span key={task} className="token task-token">
             {formatLabel(task)}
@@ -140,12 +195,26 @@ function SearchIcon() {
 function App() {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
-  const [filters, setFilters] = useState({ sources: [], formats: [], tasks: [] });
+  const [filters, setFilters] = useState({
+    sources: [],
+    formats: [],
+    tasks: [],
+    languages: [],
+    licenses: [],
+    modalities: [],
+    sizes: [],
+    updated: [],
+  });
   const [results, setResults] = useState([]);
   const [availableFilters, setAvailableFilters] = useState({
     sources: {},
     formats: {},
     task_types: {},
+    languages: {},
+    licenses: {},
+    modalities: {},
+    sizes: {},
+    updated: {},
   });
   const [sourceStats, setSourceStats] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
@@ -187,6 +256,56 @@ function App() {
     [availableFilters.task_types]
   );
 
+  const languageItems = useMemo(
+    () =>
+      Object.entries(availableFilters.languages || {}).map(([value, count]) => ({
+        value,
+        label: formatLabel(value),
+        count,
+      })),
+    [availableFilters.languages]
+  );
+
+  const licenseItems = useMemo(
+    () =>
+      Object.entries(availableFilters.licenses || {}).map(([value, count]) => ({
+        value,
+        label: formatLabel(value),
+        count,
+      })),
+    [availableFilters.licenses]
+  );
+
+  const modalityItems = useMemo(
+    () =>
+      Object.entries(availableFilters.modalities || {}).map(([value, count]) => ({
+        value,
+        label: formatLabel(value),
+        count,
+      })),
+    [availableFilters.modalities]
+  );
+
+  const sizeItems = useMemo(
+    () =>
+      Object.entries(availableFilters.sizes || {}).map(([value, count]) => ({
+        value,
+        label: formatLabel(value),
+        count,
+      })),
+    [availableFilters.sizes]
+  );
+
+  const updatedItems = useMemo(
+    () =>
+      Object.entries(availableFilters.updated || {}).map(([value, count]) => ({
+        value,
+        label: formatLabel(value),
+        count,
+      })),
+    [availableFilters.updated]
+  );
+
   const fetchSources = async () => {
     const response = await fetch("/api/sources");
     const data = await response.json();
@@ -216,12 +335,26 @@ function App() {
           sources: {},
           formats: {},
           task_types: {},
+          languages: {},
+          licenses: {},
+          modalities: {},
+          sizes: {},
+          updated: {},
         }
       );
     } catch (requestError) {
       setResults([]);
       setTotalResults(0);
-      setAvailableFilters({ sources: {}, formats: {}, task_types: {} });
+      setAvailableFilters({
+        sources: {},
+        formats: {},
+        task_types: {},
+        languages: {},
+        licenses: {},
+        modalities: {},
+        sizes: {},
+        updated: {},
+      });
       setError(requestError.message || "Unable to load datasets.");
     } finally {
       setIsLoading(false);
@@ -266,7 +399,16 @@ function App() {
   };
 
   const clearFilters = () => {
-    setFilters({ sources: [], formats: [], tasks: [] });
+    setFilters({
+      sources: [],
+      formats: [],
+      tasks: [],
+      languages: [],
+      licenses: [],
+      modalities: [],
+      sizes: [],
+      updated: [],
+    });
   };
 
   const clearSearch = () => {
@@ -408,6 +550,36 @@ function App() {
             items={taskItems}
             selected={filters.tasks}
             onToggle={(value) => toggleFilter("tasks", value)}
+          />
+          <ToggleGroup
+            title="Languages"
+            items={languageItems}
+            selected={filters.languages}
+            onToggle={(value) => toggleFilter("languages", value)}
+          />
+          <ToggleGroup
+            title="Licenses"
+            items={licenseItems}
+            selected={filters.licenses}
+            onToggle={(value) => toggleFilter("licenses", value)}
+          />
+          <ToggleGroup
+            title="Modalities"
+            items={modalityItems}
+            selected={filters.modalities}
+            onToggle={(value) => toggleFilter("modalities", value)}
+          />
+          <ToggleGroup
+            title="Size"
+            items={sizeItems}
+            selected={filters.sizes}
+            onToggle={(value) => toggleFilter("sizes", value)}
+          />
+          <ToggleGroup
+            title="Freshness"
+            items={updatedItems}
+            selected={filters.updated}
+            onToggle={(value) => toggleFilter("updated", value)}
           />
         </aside>
 

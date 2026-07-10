@@ -92,14 +92,13 @@ This makes the local search experience stronger than a plain keyword lookup whil
 
 ## API Summary
 
-The primary API lives in `backend/server.js`.
+The production API lives in the root `api/` directory as Vercel serverless functions. Shared search logic is in `api/_lib/`.
 
 - `GET /api/health`
 - `GET /api/search?q=...`
 - `GET /api/datasets?page=1&limit=12`
 - `GET /api/sources`
 - `GET /api/deep-search?q=...`
-- `POST /api/reload`
 
 ## Quick Start
 
@@ -132,7 +131,7 @@ Optional environment variables:
 
 Start from [.env.example](/c:/Projects/Web%20Search%20Engine/.env.example).
 
-### 4. Run the backend
+### 4. Run the legacy backend prototype
 
 ```bash
 cd backend
@@ -146,7 +145,17 @@ cd frontend
 npm start
 ```
 
-The React app uses a development proxy to `http://localhost:3001`.
+The current production deployment path does not require the legacy backend server. The frontend calls the root `/api/*` endpoints directly when deployed.
+
+## Deployment
+
+This repository is currently set up for Vercel deployment:
+
+- `vercel.json` configures the serverless functions in `api/`
+- the root `package.json` builds the React frontend in `frontend/`
+- the deploy output is `frontend/build`
+
+Before deploying, make sure the tracked `data/` artifacts reflect the dataset catalog you want users to search.
 
 ## Data Pipeline Commands
 

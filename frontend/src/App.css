@@ -289,6 +289,8 @@
   align-self: start;
   position: sticky;
   top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
 }
 
 .filters-header,
@@ -463,6 +465,11 @@
   color: #b45309;
 }
 
+.modality-token {
+  background: rgba(124, 58, 237, 0.1);
+  color: #6d28d9;
+}
+
 .format-token {
   background: rgba(37, 99, 235, 0.1);
   color: #1d4ed8;
@@ -587,6 +594,7 @@
 
   .filters-panel {
     position: static;
+    max-height: none;
   }
 }
 
